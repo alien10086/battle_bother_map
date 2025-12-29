@@ -42,6 +42,21 @@ func _ready():
 	noise_moisture.frequency = noise_moisture_scale
 	
 	
+	# # 设置为正六边形平顶 (Flat Top)
+	# tile_map_layer.tile_set.tile_shape = TileSet.TILE_SHAPE_HEXAGON
+	# tile_map_layer.tile_set.tile_offset_axis = TileSet.TILE_OFFSET_AXIS_HORIZONTAL
+	# # 统一使用 120, 140 以匹配您的资源尺寸
+	# tile_map_layer.tile_set.tile_size = Vector2i(120, 140)
+	
+	# # 应用网格高亮着色器
+	# var shader = load("res://resource/shaders/hex_grid.gdshader")
+	# var mat = ShaderMaterial.new()
+	# mat.shader = shader
+	# mat.set_shader_parameter("grid_color", Color(0, 0.68, 0.88, 1.0)) # 蓝色高亮
+	# mat.set_shader_parameter("line_thickness", 0.08)           # 增加厚度
+	# mat.set_shader_parameter("tile_size", Vector2(120, 140))   # 必须与 TileSet 一致
+	# tile_map_layer.material = mat
+	
 	#generate_map()
 	#init_map(50, 50)
 	init_hex_map(10)

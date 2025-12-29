@@ -2,58 +2,61 @@ shader_type canvas_item;
 
 uniform vec4 grid_color : source_color = vec4(1.0, 1.0, 1.0, 0.5);
 uniform float line_thickness : hint_range(0.0, 0.2) = 0.05;
-uniform vec2 tile_size = vec2(120.0, 104.0);
+uniform vec2 tile_size = vec2(120.0, 140.0);
 
-varying vec2 world_pos;
+varying vec2 local_pos;
 
 void vertex() {
-	// 获取世界坐标或相对于 CanvasItem 的局部坐标
-	world_pos = VERTEX;
+	local_pos = VERTEX;
 }
 
-// 六边形距离函数 (平顶)
+// 平顶六边形距离函数
 float hex_dist(vec2 p, float r) {
 	p = abs(p);
+	// 0.866025 = sqrt(3)/2
 	float d = dot(p, normalize(vec2(1.0, 1.73205)));
 	return max(d, p.x) - r;
 }
 
 void fragment() {
-	// 平顶六边形布局参数
-	// 水平间距 = 0.75 * W
-	// 垂直间距 = H
 	float w = tile_size.x;
 	float h = tile_size.y;
 	
+	// Godot 平顶六边形排列逻辑：
+	// 中心点偏移：每隔一列垂直偏移 0.5 * h
+	// 水平间距：0.75 * w
+	// 垂直间距：h
+	
+	vec2 size = vec2(w * 0.75, h);
+	vec2 p = local_pos;
+	
+	// 修正偏移：Godot 的 (0,0) 瓦片中心通常在 (w/2, h/2)
+	p -= vec2(w * 0.5, h * 0.5);
+	
+	vec2 p1 = mod(p, size * vec2(2.0, 1.0)); // 采样两列以处理交错
+	
+	// 计算两个候选中心的相对位置
 	vec2 grid = vec2(w * 0.75, h);
 	
-	// 计算两个候选网格点（处理偏移）
-	vec2 p1 = mod(world_pos, grid) - grid * 0.5;
-	vec2 p2 = mod(world_pos - grid * 0.5, grid) - grid * 0.5;
+	// 简化的六边形网格最近中心点查找
+	vec2 a = mod(p, grid) - grid * 0.5;
+	vec2 b = mod(p - grid * 0.5, grid) - grid * 0.5;
 	
-	vec2 p;
-	if (length(p1) < length(p2)) {
-		p = p1;
-	} else {
-		p = p2;
-	}
+	vec2 g = dot(a, a) < dot(b, b) ? a : b;
 	
-	// 计算到边缘的距离
-	// r 是内切圆半径，平顶六边形 r = w/2
+	// r 为外接圆半径 (w/2)
 	float r = w * 0.5;
-	float dist = hex_dist(p, r);
+	float dist = hex_dist(g, r);
 	
-	// 边缘高亮逻辑
-	// 使用 line_thickness 控制宽度
-	float border = smoothstep(-w * line_thickness, 0.0, dist);
+	// 边缘高亮
+	float edge = smoothstep(-w * line_thickness, 0.0, dist);
 	
 	vec4 tex_color = texture(TEXTURE, UV);
 	
-	// 混合颜色：在原有纹理基础上叠加强调色
-	// 如果 tex_color.a 为 0，说明超出了瓦片范围，我们保持透明
-	vec3 final_color = mix(tex_color.rgb, grid_color.rgb, border * grid_color.a);
-	COLOR = vec4(final_color, tex_color.a);
-	
-	// 调试模式：如果没效果，取消下面一行的注释，整个地图会变成红色网格
-	// COLOR = vec4(grid_color.rgb, border * grid_color.a);
+	// 只在有纹理的地方显示网格线
+	if (tex_color.a > 0.01) {
+		COLOR = mix(tex_color, grid_color, edge * grid_color.a);
+	} else {
+		discard;
+	}
 }
