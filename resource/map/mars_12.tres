@@ -1,0 +1,7 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3 uid="uid://3d630c8a8260"]
+
+[ext_resource type="Texture2D" uid="uid://b2fb7lkugqaas" path="res://assets/hexagonTerrain_sheet.png" id="1_ovi56"]
+
+[resource]
+atlas = ExtResource("1_ovi56")
+region = Rect2(366, 426, 120, 140)
