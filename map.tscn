@@ -1,7 +1,14 @@
-[gd_scene load_steps=8 format=3 uid="uid://y3263pmqy4jx"]
+[gd_scene load_steps=10 format=3 uid="uid://y3263pmqy4jx"]
 
 [ext_resource type="Script" uid="uid://cgx3oieielqlh" path="res://map.gd" id="1_c7s6e"]
+[ext_resource type="Shader" uid="uid://mbe65n0unfy8" path="res://resource/shaders/hex_grid.gdshader" id="2_e0an3"]
 [ext_resource type="Texture2D" uid="uid://cp7bghlxt1n30" path="res://assets/hexagonVector_tiles.svg" id="2_wijl4"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_p5pve"]
+shader = ExtResource("2_e0an3")
+shader_parameter/grid_color = Color(1, 1, 1, 1)
+shader_parameter/line_thickness = 0.06000000285
+shader_parameter/tile_size = Vector2(120, 140)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_e0an3"]
 resource_name = "grass"
@@ -77,6 +84,7 @@ script = ExtResource("1_c7s6e")
 position = Vector2(600, 600)
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
+material = SubResource("ShaderMaterial_p5pve")
 tile_set = SubResource("TileSet_wijl4")
 
 [node name="UI" type="CanvasLayer" parent="."]
