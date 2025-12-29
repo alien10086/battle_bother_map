@@ -41,8 +41,16 @@ func _ready():
 	noise_height.frequency = noise_height_scale
 	noise_moisture.frequency = noise_moisture_scale
 	
+	# 设置为正六边形平顶 (Flat Top)
+	# tile_map_layer.tile_set.tile_shape = TileSet.TILE_SHAPE_HEXAGON
+	# tile_map_layer.tile_set.tile_offset_axis = TileSet.TILE_OFFSET_AXIS_HORIZONTAL
+	# 对于平顶六边形，宽度通常大于高度以保持“正”六边形比例
+	# 如果宽度是 120，高度约为 104 (120 / 1.1547)
+	# tile_map_layer.tile_set.tile_size = Vector2i(120, 104)
+	
 	#generate_map()
-	init_map(10, 10)
+	#init_map(50, 50)
+	init_hex_map(10)
 	#init_player()
 	
 func init_player():
@@ -50,6 +58,50 @@ func init_player():
 	player.texture = player_array[0]
 	player.position = tile_map_layer.map_to_local(Vector2i(1, 1))
 	add_child(player)
+
+func init_hex_map(radius):
+	var center = Vector2i(15, 15) # Offset to keep positive indices if preferred, or just (0,0)
+	var valid_tiles = []
+	
+	for q in range(-radius, radius + 1):
+		for r in range(max(-radius, -q - radius), min(radius, -q + radius) + 1):
+			var s = -q - r
+			
+			# Axial (q, r) to Odd-Q Offset (col, row) for Flat-Topped
+			# col = q
+			# row = r + (q - (q&1)) / 2
+			var col = q + center.x
+			var row = r + (q - (q&1)) / 2 + center.y
+			var coords = Vector2i(col, row)
+			
+			# Use world position for noise to get better distribution on hex grid
+			var world_pos = tile_map_layer.map_to_local(coords)
+			var height_num = noise_height.get_noise_2d(world_pos.x, world_pos.y)
+			var moisture_num = noise_moisture.get_noise_2d(world_pos.x, world_pos.y)
+			
+			var height_tile_set_index = int(remap(height_num, -1, 1, 0, 3))
+			var moisture_tile_set_index  = int(remap(moisture_num, -1, 1, 0, 7))
+			
+			var tile_coords = get_true_tile(height_tile_set_index, moisture_tile_set_index)
+			tile_map_layer.set_cell(
+				coords,
+				height_tile_set_index,
+				tile_coords)
+			
+			tile_data[coords] = {
+				"height": height_tile_set_index,
+				"moisture": moisture_tile_set_index
+			}
+			valid_tiles.append(coords)
+
+	for i in range(8):
+		var player = Sprite2D.new()
+		player.texture = player_array[i % player_array.size()]
+		player.scale = Vector2(4, 4)
+		if valid_tiles.size() > 0:
+			var random_coords = valid_tiles[randi() % valid_tiles.size()]
+			player.position = tile_map_layer.map_to_local(random_coords)
+			add_child(player)
 
 func init_map(width, height):
 	for x in range(0, width):
