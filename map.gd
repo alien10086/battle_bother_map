@@ -41,26 +41,12 @@ func _ready():
 	noise_height.frequency = noise_height_scale
 	noise_moisture.frequency = noise_moisture_scale
 	
-	# 设置为正六边形平顶 (Flat Top)
-	# tile_map_layer.tile_set.tile_shape = TileSet.TILE_SHAPE_HEXAGON
-	# tile_map_layer.tile_set.tile_offset_axis = TileSet.TILE_OFFSET_AXIS_HORIZONTAL
-	# 对于平顶六边形，宽度通常大于高度以保持“正”六边形比例
-	# 如果宽度是 120，高度约为 104 (120 / 1.1547)
-	# tile_map_layer.tile_set.tile_size = Vector2i(120, 104)
 	
 	#generate_map()
 	#init_map(50, 50)
 	init_hex_map(10)
 	#init_player()
 
-	# # 应用网格高亮着色器
-	# var shader = load("res://resource/shaders/hex_grid.gdshader")
-	# var mat = ShaderMaterial.new()
-	# mat.shader = shader
-	# mat.set_shader_parameter("grid_color", Color(1, 1, 1, 0.8)) # 提高透明度到 0.8 增强可见度
-	# mat.set_shader_parameter("line_thickness", 0.05)           # 稍微加粗
-	# mat.set_shader_parameter("tile_size", Vector2(120, 104))
-	# tile_map_layer.material = mat
 	
 func init_player():
 	var player = Sprite2D.new()
