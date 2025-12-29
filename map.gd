@@ -52,6 +52,15 @@ func _ready():
 	#init_map(50, 50)
 	init_hex_map(10)
 	#init_player()
+
+	# # 应用网格高亮着色器
+	# var shader = load("res://resource/shaders/hex_grid.gdshader")
+	# var mat = ShaderMaterial.new()
+	# mat.shader = shader
+	# mat.set_shader_parameter("grid_color", Color(1, 1, 1, 0.8)) # 提高透明度到 0.8 增强可见度
+	# mat.set_shader_parameter("line_thickness", 0.05)           # 稍微加粗
+	# mat.set_shader_parameter("tile_size", Vector2(120, 104))
+	# tile_map_layer.material = mat
 	
 func init_player():
 	var player = Sprite2D.new()

@@ -6,8 +6,8 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_p5pve"]
 shader = ExtResource("2_e0an3")
-shader_parameter/grid_color = Color(1, 1, 1, 1)
-shader_parameter/line_thickness = 0.06000000285
+shader_parameter/grid_color = Color(2.3102762e-06, 0.6828688, 0.8844885, 1)
+shader_parameter/line_thickness = 0.20000000298023
 shader_parameter/tile_size = Vector2(120, 140)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_e0an3"]
